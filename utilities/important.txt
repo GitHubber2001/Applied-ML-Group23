@@ -1,0 +1,3 @@
+This utilities folder was originally for the NLP course
+and made by Kevin Kuipers (s5051150) (also member of this assignment group) 
+and may potentially be reused and/or modified for this assignment.
