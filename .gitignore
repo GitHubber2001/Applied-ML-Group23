@@ -7,3 +7,4 @@ venv/
 
 saved_data/*
 !saved_data/.gitkeep 
+Notebooks/pca_transform.pkl
