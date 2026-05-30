@@ -64,5 +64,5 @@ def main():
 
 
 if __name__ == "__main__":
-    with TimeManager("Program", False):
+    with TimeManager("Program", True):
         main()
