@@ -1,12 +1,17 @@
 import joblib
 import numpy as np
 
-cnn_model = joblib.load("_.pkl")
+trained_cnn_model = joblib.load("trained_cnn.pkl")
 
-def predict(img: np.ndarray):
-    prediction = cnn_model.predict(img)
 
-    if prediction == 0:
-        return "PNEUMONIA"
-    elif prediction == 1:
-        return "NORMAL"
+class Trained_CNN:
+    """A Trained CNN that can predict PNEUMONIA cases"""
+
+    @staticmethod
+    def predict(img: np.ndarray):
+        prediction = trained_cnn_model.predict(img)
+
+        if prediction == 0:
+            return "PNEUMONIA"
+        elif prediction == 1:
+            return "NORMAL"
