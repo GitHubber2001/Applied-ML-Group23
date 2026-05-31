@@ -6,14 +6,12 @@ from sklearn.dummy import DummyClassifier
 
 class RandomStrategy(Enum):
     most_frequent = "most_frequent"
-    prior = "prior"
     stratified = "stratified"
     uniform = "uniform"
-    constant = "constant"
 
 
 class RandomGuesser:
-    """A Benchmark model based on random/simple strategy guessing"""
+    """A Benchmark model based on random strategies guessing"""
 
     def __init__(self, strategy: RandomStrategy) -> None:
         if not isinstance(strategy, RandomStrategy):
@@ -23,28 +21,31 @@ class RandomGuesser:
 
         self._model = DummyClassifier(strategy=strategy.value)
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> None:
         self._model.fit(X, y)
 
-    def predict(self, X, y):
+    def predict(self, X, y) -> np.ndarray:
         self._model.fit(X, y)
         predictions = self._model.predict(X)
 
         return predictions
 
-    def get_accuracy(self, X, y):
+    def get_accuracy(self, X, y) -> float:
         accuracy = self._model.score(X, y)
         return accuracy
 
 
-# temp test
-X = np.array([-1, 1, 1, 1])
-y = np.array([0, 1, 1, 1])
+def display_random_strategies_performances(X, y) -> None:
+    print("-" * 30)
+    print("accuracies random strategies: ")
 
-most_frequent_guesser = RandomGuesser(RandomStrategy.most_frequent)
+    for strategy in RandomStrategy:
+        model = RandomGuesser(strategy)
 
-most_frequent_guesser.fit(X, y)
-predictions = most_frequent_guesser.predict(X, y)
-accuracy = most_frequent_guesser.get_accuracy(predictions, y)
+        model.fit(X, y)
+        predictions = model.predict(X, y)
+        accuracy = model.get_accuracy(predictions, y)
 
-print(accuracy)
+        print(f"{strategy.value}: {accuracy:.4f}")
+
+    print("-" * 30)
