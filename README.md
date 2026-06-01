@@ -37,7 +37,8 @@ This project detects pneumonia from chest X‑ray images using a machine‑learn
 - Created a experimental CNN branch.
 
 ## What we achieved
-Our random forest baseline achieved 84% validation score, which after calculating is better than random guessing strategies like uniform guessing which has 50%, highest frequency guessing 72% and stratisfied guessing is 61%. 
+Our random forest baseline achieved around 84% validation score, which after calculating is better than random guessing strategies like uniform guessing which has 50%, highest frequency guessing 72% and stratisfied guessing is 61%. 
+<img width="388" height="21" alt="image" src="https://github.com/user-attachments/assets/216046e3-8bb4-49d2-9dcf-3a181a5f4fdd" />
 
 ## 
 ## Linux and macOS
