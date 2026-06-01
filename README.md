@@ -54,8 +54,9 @@ An image is uploaded
 3. Image is flattened into a 1-D vector
 4. Pca transformer reduces it to 648 components
 5. Random Forest model predicts the class
-6. Then finally API returns the prediction JSON 
-## 
+6. Then finally API returns the prediction JSON
+   
+## Member contribitutions
 ## Linux and macOS
 ```console
 text
