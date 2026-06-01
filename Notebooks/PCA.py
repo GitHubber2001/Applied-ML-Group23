@@ -94,4 +94,4 @@ random_forest.fit(X_train, y_train)
 prediction = random_forest.predict(X_test)
 
 print(f"Accuracy: {accuracy_score(y_test, prediction)}")
-joblib.dump(random_forest, "random_forest.pkl")
+joblib.dump(random_forest, "random_forest_with_pca.pkl")

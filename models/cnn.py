@@ -1,7 +1,7 @@
 import joblib
 import numpy as np
 
-trained_cnn_model = joblib.load("trained_cnn.pkl")
+trained_cnn_model = joblib.load("cnn.pkl")
 
 
 class Trained_CNN:
