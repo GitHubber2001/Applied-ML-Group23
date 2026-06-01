@@ -2,12 +2,9 @@ import os
 import sys
 
 import cv2
-import joblib
 import numpy as np
 from fastapi import FastAPI, File, UploadFile
-from pydantic import BaseModel, ConfigDict
 
-# Add parent directory to path to import models
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from models.forest_model import predict
