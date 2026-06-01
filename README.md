@@ -40,12 +40,21 @@ This project detects pneumonia from chest X‑ray images using a machine‑learn
 Our random forest baseline achieved around 84% validation score, which after calculating is better than random guessing strategies like uniform guessing which has 50%, highest frequency guessing 72% and stratisfied guessing is 61%. 
 <img width="388" height="21" alt="image" src="https://github.com/user-attachments/assets/216046e3-8bb4-49d2-9dcf-3a181a5f4fdd" />
 
+
 ## API documentation
+Showing API documentation
+<img width="1600" height="658" alt="image" src="https://github.com/user-attachments/assets/1654d2c7-b180-4567-9b7e-675c1731de25" />
+Example request and response
+<img width="1600" height="766" alt="image" src="https://github.com/user-attachments/assets/4c1e053a-f3fe-4a0e-b1dd-7e85e399a459" />
 
-<img width="1600" height="740" alt="image" src="https://github.com/user-attachments/assets/be8941a5-2d16-494d-8e94-c73a40d85ca9" />
-
-<img width="308" height="59" alt="image" src="https://github.com/user-attachments/assets/4dc1529e-d66e-4e4c-9db7-dcc648dd68a7" />
-
+## How the endpoint works
+An image is uploaded
+1. The api reads the file and uses graycale conversion
+2. Image is resized to 256 x 256
+3. Image is flattened into a 1-D vector
+4. Pca transformer reduces it to 648 components
+5. Random Forest model predicts the class
+6. Then finally API returns the prediction JSON 
 ## 
 ## Linux and macOS
 ```console
