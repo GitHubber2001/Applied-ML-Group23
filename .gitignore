@@ -11,3 +11,4 @@ saved_data/*
 Notebooks/chest_xray
 Notebooks/pca_transform.pkl
 *.pkl
+*.json
