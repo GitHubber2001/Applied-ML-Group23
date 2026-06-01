@@ -41,12 +41,15 @@ model_info_file_path = "random_forest_info.json"
 X_train, X_test, y_train, y_test = get_dataset_split()
 
 search_parameters = {
-    "n_estimators": list(range(20, 40, 5)),
-    "max_depth": list(range(20, 50, 5)),
+    "n_estimators": list(range(20, 31, 1)),
+    "max_depth": list(range(20, 31, 1)),
 }
 
 search_model = RandomForestClassifier(random_state=RANDOM_STATE)
-search = GridSearchCV(search_model, param_grid=search_parameters, cv=3, verbose=2)
+search = GridSearchCV(
+    search_model, param_grid=search_parameters, verbose=2, cv=3, n_jobs=-1
+)
+
 search.fit(X_train, y_train)
 
 best_random_forest = search.best_estimator_
@@ -64,12 +67,20 @@ best_model_info = {
     "hyperparameters": best_parameters,
 }
 
-sorted_results = pd.DataFrame(search.cv_results_).sort_values(by="rank_test_score")[
-    ["rank_test_score", "mean_test_score", "params"]
-]
+sorted_results = pd.DataFrame(search.cv_results_).sort_values(
+    by="rank_test_score", ascending=False
+)[["rank_test_score", "mean_test_score", "params"]]
+
 print(sorted_results)
 
 if os.path.exists(model_info_file_path):
+    with open(model_info_file_path, "r") as file:
+        previous_model_info = json.load(file)
+        previous_test_accuracy = previous_model_info["test_accuracy"]
+else:
+    previous_test_accuracy = -1
+
+if os.path.exists(model_file_path) and os.path.exists(model_info_file_path):
     with open(model_info_file_path, "r") as file:
         previous_model_info = json.load(file)
         previous_test_accuracy = previous_model_info["test_accuracy"]
@@ -87,3 +98,5 @@ if test_accuracy > previous_test_accuracy:
     print(f"SAVED ({test_accuracy} > {previous_test_accuracy})")
 else:
     print(f"NOT SAVED ({test_accuracy} <= {previous_test_accuracy})")
+
+print(f"Accuracy Random Forest: {test_accuracy}")
