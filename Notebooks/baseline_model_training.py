@@ -30,9 +30,9 @@ search_parameters = {
     "max_depth": [None, 30, 35, 40],
 }
 
-random_forest = RandomForestClassifier(random_state=RANDOM_STATE, n_estimators=25)
+search_model = RandomForestClassifier(random_state=RANDOM_STATE)
 
-search = GridSearchCV(random_forest, param_grid=search_parameters, cv=3, verbose=3)
+search = GridSearchCV(search_model, param_grid=search_parameters, cv=3, verbose=3)
 search.fit(X_train, y_train)
 
 best_random_forest = search.best_estimator_
@@ -45,4 +45,4 @@ print(sorted_results)
 
 print(f"Accuracy random forest: {accuracy_score(y_test, predictions)}")
 
-joblib.dump(random_forest, "random_forest.pkl")
+joblib.dump(best_random_forest, "random_forest.pkl")
