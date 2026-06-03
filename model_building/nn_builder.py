@@ -70,31 +70,12 @@ def get_dataset_split():
     return X_train, X_test, y_train, y_test
 
 
-class CNN(nn.Module):
+class NeuralNetwork(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        self.convulution = nn.Sequential(
-            # block 1
-            nn.Conv1d(1, 32, kernel_size=5, padding=2),
-            nn.BatchNorm1d(32),
-            ACTIVATION_FUNCTION(),
-            nn.MaxPool1d(kernel_size=2),
-            # block 2
-            nn.Conv1d(32, 64, kernel_size=3, padding=1),
-            nn.BatchNorm1d(64),
-            ACTIVATION_FUNCTION(),
-            nn.MaxPool1d(kernel_size=2),
-            # block 3
-            nn.Conv1d(64, 128, kernel_size=3, padding=1),
-            nn.BatchNorm1d(128),
-            ACTIVATION_FUNCTION(),
-            nn.MaxPool1d(kernel_size=2),
-            # adapative pool
-            nn.AdaptiveAvgPool1d(1),
-        )
 
         self.classifier = nn.Sequential(
-            nn.Linear(128, 128),
+            nn.Linear(AMOUNT_INPUT_FEATURES, 128),
             nn.BatchNorm1d(128),
             ACTIVATION_FUNCTION(),
             nn.Dropout(0.4),
@@ -102,9 +83,6 @@ class CNN(nn.Module):
         )
 
     def forward(self, x):
-        x = x.unsqueeze(1)
-        x = self.convulution(x)
-        x = torch.flatten(x, start_dim=1)
         x = self.classifier(x)
 
         return x
@@ -113,22 +91,22 @@ class CNN(nn.Module):
 def main():
     set_random_state(RANDOM_STATE)
 
-    model_file_path = "cnn.pkl"
+    model_file_path = "neural_network.pkl"
 
     device = get_device()
     X_train, X_test, y_train, y_test = get_dataset_split()
 
-    cnn_model = CNN().to(device)
-    cnn_model.train()
+    model = NeuralNetwork().to(device)
+    model.train()
 
     train_data_loader = get_dataloader(X_train, y_train)
     test_data_loader = get_dataloader(X_test, y_test)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(cnn_model.parameters(), lr=LEARNINGRATE)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNINGRATE)
 
     print("training")
-    cnn_model.train()
+    model.train()
     for epoch in range(AMOUNT_TRAINING_EPOCHS):
         print(f"training epoch: {epoch + 1}/{AMOUNT_TRAINING_EPOCHS}")
 
@@ -139,27 +117,27 @@ def main():
             X = X.to(device)
             y = y.to(device)
 
-            outputs = cnn_model(X)
+            outputs = model(X)
             loss = criterion(outputs, y)
             loss.backward()
             optimizer.step()
 
     print("eval")
     all_test_predictions = []
-    cnn_model.eval()
+    model.eval()
     with torch.no_grad():
         for data in test_data_loader:
             X, y = data
             X = X.to(device)
             y = y.to(device)
 
-            outputs = cnn_model(X)
+            outputs = model(X)
             predictions = outputs.argmax(1)
             all_test_predictions.extend(predictions.cpu().tolist())
 
     test_accuracy = accuracy_score(y_test, all_test_predictions)
 
-    joblib.dump(cnn_model, model_file_path)
+    joblib.dump(model, model_file_path)
     print(f"SAVED (accuracy={test_accuracy})")
 
 
