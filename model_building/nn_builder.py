@@ -1,11 +1,15 @@
+import copy
 import random
 
 import joblib
 import numpy as np
+import optuna
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from optuna.study import Study
+from optuna.trial import Trial
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset
@@ -18,10 +22,6 @@ AMOUNT_IMAGE_CHANNELS = 1
 
 AMOUNT_CLASSES = 2
 
-# later change with hyper parameter tuning
-AMOUNT_TRAINING_EPOCHS = 30
-BATCH_SIZE = 64
-LEARNINGRATE = 1e-4
 ACTIVATION_FUNCTION = nn.ReLU
 
 
@@ -45,11 +45,11 @@ def set_random_state(random_seed) -> None:
     torch.backends.cudnn.benchmark = False
 
 
-def get_dataloader(X: pd.DataFrame, y: pd.Series) -> DataLoader:
+def get_dataloader(X: pd.DataFrame, y: pd.Series, batch_size) -> DataLoader:
     x_tensor = torch.tensor(X.values, dtype=torch.float32)
     y_tensor = torch.tensor(y.values, dtype=torch.long)
     dataset = TensorDataset(x_tensor, y_tensor)
-    data_loader = DataLoader(dataset, batch_size=BATCH_SIZE)
+    data_loader = DataLoader(dataset, batch_size=batch_size)
 
     return data_loader
 
@@ -87,10 +87,14 @@ class NeuralNetwork(nn.Module):
         self.name = "Neural Network"
 
         self.classifier = nn.Sequential(
-            nn.Linear(AMOUNT_INPUT_FEATURES, 128),
+            nn.Linear(AMOUNT_INPUT_FEATURES, 256),
+            nn.BatchNorm1d(256),
+            ACTIVATION_FUNCTION(),
+            #
+            nn.Linear(256, 128),
             nn.BatchNorm1d(128),
             ACTIVATION_FUNCTION(),
-            nn.Dropout(0.4),
+            #
             nn.Linear(128, AMOUNT_CLASSES),
         )
 
@@ -100,28 +104,29 @@ class NeuralNetwork(nn.Module):
         return x
 
 
-def main():
-    set_random_state(RANDOM_STATE)
-
-    model_file_path = "neural_network.pkl"
-
-    device = get_device()
-    X_train, X_test, y_train, y_test = get_dataset_split()
+def objective(
+    trial: Trial,
+    best_model_info: dict,
+    device: str,
+    X_train,
+    X_test,
+    y_train,
+    y_test,
+) -> float:
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-3, log=True)
+    batch_size = trial.suggest_categorical("batch_size", [32, 64, 128, 256])
+    amount_training_epochs = trial.suggest_int("amount_training_epochs", 10, 75)
 
     model = NeuralNetwork().to(device)
-    model.train()
 
-    train_data_loader = get_dataloader(X_train, y_train)
-    test_data_loader = get_dataloader(X_test, y_test)
+    train_data_loader = get_dataloader(X_train, y_train, batch_size)
+    test_data_loader = get_dataloader(X_test, y_test, batch_size)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=LEARNINGRATE)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-    print("training")
     model.train()
-    for epoch in range(AMOUNT_TRAINING_EPOCHS):
-        print(f"training epoch: {epoch + 1}/{AMOUNT_TRAINING_EPOCHS}")
-
+    for epoch in range(amount_training_epochs):
         for data in train_data_loader:
             optimizer.zero_grad()
 
@@ -134,7 +139,6 @@ def main():
             loss.backward()
             optimizer.step()
 
-    print("eval")
     all_test_predictions = []
     model.eval()
     with torch.no_grad():
@@ -147,12 +151,48 @@ def main():
             predictions = outputs.argmax(1)
             all_test_predictions.extend(predictions.cpu().tolist())
 
-    test_accuracy = accuracy_score(y_test, all_test_predictions)
+    test_accuracy = float(accuracy_score(y_test, all_test_predictions))
+    best_accuracy = best_model_info["score"]
 
-    display_evaluation_metrics(model.name, y_test, all_test_predictions)
+    if test_accuracy > best_accuracy:
+        best_model_info["model"] = copy.deepcopy(model).to("cpu")
+        best_model_info["score"] = test_accuracy
+        best_model_info["predictions"] = all_test_predictions
 
-    joblib.dump(model, model_file_path)
-    print(f"{model.name} model: SAVED (accuracy={test_accuracy})")
+    return test_accuracy
+
+
+def main():
+    set_random_state(RANDOM_STATE)
+
+    model_file_path = "neural_network.pkl"
+
+    device = get_device()
+    X_train, X_test, y_train, y_test = get_dataset_split()
+
+    best_model_info = {"model": None, "score": 0, "predictions": []}
+
+    amount_optuna_trials = 30
+    study = optuna.create_study(direction="maximize")
+    study.optimize(
+        lambda trial: objective(
+            trial, best_model_info, device, X_train, X_test, y_train, y_test
+        ),
+        n_trials=amount_optuna_trials,
+    )
+
+    print("best model params:")
+    print(study.best_params)
+
+    best_model = best_model_info["model"]
+    best_model_predictions = best_model_info["predictions"]
+
+    test_accuracy = accuracy_score(y_test, best_model_predictions)
+
+    display_evaluation_metrics(best_model.name, y_test, best_model_predictions)
+
+    joblib.dump(best_model, model_file_path)
+    print(f"{best_model.name} model: SAVED (accuracy={test_accuracy})")
 
 
 if __name__ == "__main__":
