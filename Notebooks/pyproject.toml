@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "cv>=1.0.0",
+<<<<<<< HEAD
+=======
+    "joblib>=1.5.3",
+>>>>>>> cnn_plus_baseline
     "jupyter>=1.1.1",
     "matplotlib>=3.10.9",
     "numpy>=2.4.4",

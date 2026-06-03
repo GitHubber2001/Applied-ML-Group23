@@ -5,9 +5,22 @@ description = "pyproject.toml file for Applied machine learning model deployment
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+<<<<<<< HEAD
+=======
+    "fastapi>=0.136.3",
+    "joblib>=1.5.3",
+>>>>>>> cnn_plus_baseline
     "matplotlib>=3.10.9",
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "pandas>=3.0.2",
+<<<<<<< HEAD
     "scikit-learn>=1.8.0",
+=======
+    "python-multipart>=0.0.30",
+    "scikit-learn>=1.8.0",
+    "torch>=2.12.0",
+    "torchvision>=0.27.0",
+    "uvicorn>=0.48.0",
+>>>>>>> cnn_plus_baseline
 ]
