@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -23,6 +23,16 @@ AMOUNT_TRAINING_EPOCHS = 30
 BATCH_SIZE = 64
 LEARNINGRATE = 1e-4
 ACTIVATION_FUNCTION = nn.ReLU
+
+
+def display_evaluation_metrics(model_name: str, y, predictions) -> None:
+    print(f"Evaluation metric of {model_name}")
+
+    test_report = classification_report(y, predictions, digits=4)
+    print(test_report)
+
+    test_confusion_matrix = confusion_matrix(y, predictions)
+    print(test_confusion_matrix)
 
 
 def set_random_state(random_seed) -> None:
@@ -73,6 +83,9 @@ def get_dataset_split():
 class CNN(nn.Module):
     def __init__(self) -> None:
         super().__init__()
+
+        self.name = "CNN"
+
         self.convulution = nn.Sequential(
             # block 1
             nn.Conv1d(1, 32, kernel_size=5, padding=2),
@@ -159,8 +172,10 @@ def main():
 
     test_accuracy = accuracy_score(y_test, all_test_predictions)
 
+    display_evaluation_metrics(cnn_model.name, y_test, all_test_predictions)
+
     joblib.dump(cnn_model, model_file_path)
-    print(f"SAVED (accuracy={test_accuracy})")
+    print(f"{cnn_model.name} model: SAVED (accuracy={test_accuracy})")
 
 
 if __name__ == "__main__":
