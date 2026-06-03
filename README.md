@@ -19,14 +19,6 @@ text
 ## Windows
 ```console
 text
-<<<<<<< HEAD
-```
-
-## Linux and macOS
-```console
-text
-```
-=======
 ```
 ## Project Description
 Our project aims to detect the pnuemonia in patients using X-ray imagse. By implementing a machine-learning pipeline which consists of PCA for dimensionality reduction and a Random Forest classifier. The dataset we are using is a standard Chest X-ray Pneumonia data set (link is above). The final deployed model is a random forest whilst the CNN branch is purely experimental and not used in deployment.
@@ -80,4 +72,3 @@ Focused mainly on the documentation making sure all elements were working and ex
 ```console
 text
 ```
->>>>>>> cnn_plus_baseline
