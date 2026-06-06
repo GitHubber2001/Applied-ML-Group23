@@ -223,7 +223,7 @@ def main():
 
     display_evaluation_metrics(model.name, y_test, all_test_predictions)
 
-    model.to(device)
+    model.to("cpu")
     joblib.dump(model, model_file_path)
     print(f"{model.name} model: SAVED (accuracy={test_accuracy})")
 
