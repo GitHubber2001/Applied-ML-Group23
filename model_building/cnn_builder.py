@@ -22,7 +22,7 @@ AMOUNT_TRAINING_EPOCHS = 25
 ACTIVATION_FUNCTION = nn.ReLU
 
 
-def set_random_state(random_seed) -> None:
+def set_random_state(random_seed: int) -> None:
     random.seed(random_seed)
     np.random.seed(random_seed)
 
@@ -55,13 +55,19 @@ def get_datasets() -> Tuple[Subset, Subset, Subset]:
         ]
     )
 
-    train_dataset = datasets.ImageFolder(root="chest_xray/train", transform=transform)
+    train_dataset = datasets.ImageFolder(
+        root="chest_xray/train", transform=transform
+    )
     validation_dataset = datasets.ImageFolder(
         root="chest_xray/val", transform=transform
     )
-    test_dataset = datasets.ImageFolder(root="chest_xray/test", transform=transform)
+    test_dataset = datasets.ImageFolder(
+        root="chest_xray/test", transform=transform
+    )
 
-    full_dataset = ConcatDataset([train_dataset, validation_dataset, test_dataset])
+    full_dataset = ConcatDataset(
+        [train_dataset, validation_dataset, test_dataset]
+    )
 
     all_indexes = np.arange(len(full_dataset))
     all_y = []
@@ -69,11 +75,19 @@ def get_datasets() -> Tuple[Subset, Subset, Subset]:
         all_y.extend(dataset.targets)
 
     indexes_train, indexes_test, y_train, y_test = train_test_split(
-        all_indexes, all_y, test_size=0.2, random_state=RANDOM_STATE, stratify=all_y
+        all_indexes,
+        all_y,
+        test_size=0.2,
+        random_state=RANDOM_STATE,
+        stratify=all_y,
     )
 
     indexes_validation, indexes_test, y_validation, y_test = train_test_split(
-        indexes_test, y_test, test_size=0.5, random_state=RANDOM_STATE, stratify=y_test
+        indexes_test,
+        y_test,
+        test_size=0.5,
+        random_state=RANDOM_STATE,
+        stratify=y_test,
     )
 
     train_dataset = Subset(full_dataset, indexes_train)
@@ -83,7 +97,9 @@ def get_datasets() -> Tuple[Subset, Subset, Subset]:
     return train_dataset, validation_dataset, test_dataset
 
 
-def get_data_loaders(train_dataset, validation_dataset, test_dataset):
+def get_data_loaders(
+    train_dataset: Subset, validation_dataset: Subset, test_dataset: Subset
+) -> tuple[DataLoader, DataLoader, DataLoader]:
     train_data_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,
@@ -124,7 +140,7 @@ def display_evaluation_metrics(model_name: str, y, predictions) -> None:
 
 
 class CNN(nn.Module):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.name = "CNN"
@@ -169,8 +185,8 @@ def main():
     device = get_device()
 
     train_dataset, validation_dataset, test_dataset = get_datasets()
-    train_dataloader, validation_dataloader, test_dataloader = get_data_loaders(
-        train_dataset, validation_dataset, test_dataset
+    train_dataloader, validation_dataloader, test_dataloader = (
+        get_data_loaders(train_dataset, validation_dataset, test_dataset)
     )
 
     # assertions because wrong type errors
@@ -192,7 +208,9 @@ def main():
     model = CNN().to(device)
 
     criterion = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-2)
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=1e-3, weight_decay=1e-2
+    )
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=AMOUNT_TRAINING_EPOCHS
     )

@@ -14,8 +14,10 @@ with TimeManager("Imports"):
     import numpy as np
     import pandas as pd
 
+
 def main():
     print("running")
+
 
 if __name__ == "__main__":
     with TimeManager("Program", True):
@@ -23,4 +25,3 @@ if __name__ == "__main__":
 
     # to keep plots open
     plt.show()
-

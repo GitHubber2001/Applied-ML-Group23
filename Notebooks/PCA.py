@@ -1,21 +1,21 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import cv2
 import os
+
+import cv2
+import joblib
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA, IncrementalPCA
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import joblib
-
+from sklearn.model_selection import train_test_split
 
 train_dir = "./chest_xray/chest_xray/train/"
 
 size = (256, 256)
 
 
-def extract_data(folder, label):
+def extract_data(folder, label) -> np.ndarray:
     data = []
     path = os.path.join(folder, label)
     data_path = os.listdir(path)

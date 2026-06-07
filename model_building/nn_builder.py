@@ -8,7 +8,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from optuna.trial import Trial
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+)
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -33,7 +37,7 @@ def display_evaluation_metrics(model_name: str, y, predictions) -> None:
     print(test_confusion_matrix)
 
 
-def set_random_state(random_seed) -> None:
+def set_random_state(random_seed: int) -> None:
     random.seed(random_seed)
     np.random.seed(random_seed)
 
@@ -104,7 +108,13 @@ class NeuralNetwork(nn.Module):
         return x
 
 
-def train_model(model, criterion, optimizer, amount_training_epochs, data_loader):
+def train_model(
+    model: NeuralNetwork,
+    criterion,
+    optimizer,
+    amount_training_epochs,
+    data_loader,
+):
     model.train()
     for epoch in range(amount_training_epochs):
         total_epoch_loss = 0.0
@@ -129,29 +139,47 @@ def objective(
 ) -> float:
     learning_rate = trial.suggest_float("learning_rate", 1e-4, 5e-4, log=True)
     batch_size = trial.suggest_categorical("batch_size", [64, 128, 256])
-    amount_training_epochs = trial.suggest_int("amount_training_epochs", 20, 50)
+    amount_training_epochs = trial.suggest_int(
+        "amount_training_epochs", 20, 50
+    )
     fc1_size = trial.suggest_categorical("fc1_size", [64, 128, 256])
     fc2_size = trial.suggest_categorical("fc2_size", [16, 32, 64, 128])
 
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
     fold_accuracies = []
 
-    for fold, (train_index, val_index) in enumerate(skf.split(X_train, y_train)):
-        X_train_fold, X_val_fold = X_train.iloc[train_index], X_train.iloc[val_index]
-        y_train_fold, y_val_fold = y_train.iloc[train_index], y_train.iloc[val_index]
+    for fold, (train_index, val_index) in enumerate(
+        skf.split(X_train, y_train)
+    ):
+        X_train_fold, X_val_fold = (
+            X_train.iloc[train_index],
+            X_train.iloc[val_index],
+        )
+        y_train_fold, y_val_fold = (
+            y_train.iloc[train_index],
+            y_train.iloc[val_index],
+        )
 
         model = NeuralNetwork(fc1_size, fc2_size).to(device)
 
         train_data_loader = get_dataloader(
             X_train_fold, y_train_fold, batch_size, device
         )
-        val_data_loader = get_dataloader(X_val_fold, y_val_fold, batch_size, device)
+        val_data_loader = get_dataloader(
+            X_val_fold, y_val_fold, batch_size, device
+        )
 
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.AdamW(model.parameters(), lr=learning_rate, fused=True)
+        optimizer = optim.AdamW(
+            model.parameters(), lr=learning_rate, fused=True
+        )
 
         train_model(
-            model, criterion, optimizer, amount_training_epochs, train_data_loader
+            model,
+            criterion,
+            optimizer,
+            amount_training_epochs,
+            train_data_loader,
         )
 
         all_test_predictions = []
@@ -207,7 +235,9 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, fused=True)
 
-    train_model(model, criterion, optimizer, amount_training_epochs, train_data_loader)
+    train_model(
+        model, criterion, optimizer, amount_training_epochs, train_data_loader
+    )
 
     all_test_predictions = []
     model.eval()
