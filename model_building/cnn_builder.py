@@ -33,9 +33,8 @@ def set_random_state(random_seed: int) -> None:
 
 
 def get_device() -> str:
-    current_accelerator = torch.accelerator.current_accelerator(True)
-    if current_accelerator is not None:
-        device = current_accelerator.type
+    if torch.cuda.is_available():
+        device = "cuda"
     else:
         device = "cpu"
 
