@@ -7,12 +7,9 @@ venv/
 
 saved_data/*
 !saved_data/.gitkeep 
-<<<<<<< HEAD
-=======
 
 *.pkl
 *.json
 
 Notebooks/chest_xray
 /chest_xray
->>>>>>> cnn_plus_baseline
