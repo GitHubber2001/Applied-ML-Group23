@@ -252,7 +252,7 @@ def main():
 
     test_accuracy = np.mean(np.array(all_test_predictions) == np.array(all_test_y))
     display_evaluation_metrics(model.name, all_test_y, all_test_predictions)
-    
+
     model_file_path = "models/cnn.pkl"
     model.to("cpu")
     joblib.dump(model, model_file_path)

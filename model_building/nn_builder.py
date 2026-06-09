@@ -1,6 +1,5 @@
 import random
 
-import joblib
 import numpy as np
 import optuna
 import pandas as pd
@@ -68,7 +67,7 @@ def get_device() -> str:
 
 
 def get_dataset_split():
-    
+
     image_df = pd.read_csv("data/image_data_relabeled.csv")
 
     X = image_df.drop(columns=["label"])
@@ -192,15 +191,13 @@ def objective(
 def main():
     set_random_state(RANDOM_STATE)
 
-    model_file_path = "neural_network.pkl"
-
     device = get_device()
 
     X_train, X_test, y_train, y_test = get_dataset_split()
 
     amount_optuna_trials = 20
     study = optuna.create_study(
-        direction="maximize",
+        direction="maximize", sampler=optuna.samplers.TPESampler(seed=RANDOM_STATE)
     )
 
     study.optimize(
