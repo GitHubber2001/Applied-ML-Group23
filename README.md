@@ -14,11 +14,29 @@ Assignment group 23
 - Mahmoud Saad (S6175767)
 
 # Install dependencies and launch API
-text
+## Setup
 
-## Windows
+### Prerequisites
+- Python 3.12+
+- [uv](https://docs.astral.sh/uv/) package manager
+
+### Installation
+1. Clone the repo
 ```console
-text
+   git clone https://github.com/yourname/rug-ml
+   cd rug-ml
+```
+
+2. Navigate and activate the virtual environment
+```console
+   cd deployment
+   uv venv
+   source .venv/bin/activate
+```
+
+3. Install dependencies
+```console
+   uv sync
 ```
 ## Project Description
 Our project aims to detect the pnuemonia in patients using X-ray imagse. By implementing a machine-learning pipeline which consists of PCA for dimensionality reduction and a Random Forest classifier. The dataset we are using is a standard Chest X-ray Pneumonia data set (link is above). The final deployed model is a random forest whilst the CNN branch is purely experimental and not used in deployment.
