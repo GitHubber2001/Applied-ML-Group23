@@ -23,8 +23,8 @@ Assignment group 23
 ### Installation
 1. Clone the repo
 ```console
-   git clone https://github.com/yourname/rug-ml
-   cd rug-ml
+   git [clone https://github.com/yourname/rug-ml](https://github.com/GitHubber2001/Applied-ML-Group23/)
+   cd Applied-ML-Group23
 ```
 
 2. Navigate and activate the virtual environment
