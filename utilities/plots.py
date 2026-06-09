@@ -13,14 +13,10 @@ def save_open_plots(
     """Saves all open plots"""
 
     if not isinstance(prefix, str):
-        raise TypeError(
-            f"Prefix argument must be a string ({prefix} was given)"
-        )
+        raise TypeError(f"Prefix argument must be a string ({prefix} was given)")
 
     if not isinstance(postfix, str):
-        raise TypeError(
-            f"Postfix argument must be a string ({postfix} was given)"
-        )
+        raise TypeError(f"Postfix argument must be a string ({postfix} was given)")
 
     if not isinstance(file_extension, str):
         raise TypeError(

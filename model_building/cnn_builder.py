@@ -1,6 +1,7 @@
 import random
 from typing import Tuple
 
+import joblib
 import numpy as np
 import torch
 import torch.nn as nn
@@ -54,19 +55,13 @@ def get_datasets() -> Tuple[Subset, Subset, Subset]:
         ]
     )
 
-    train_dataset = datasets.ImageFolder(
-        root="chest_xray/train", transform=transform
-    )
+    train_dataset = datasets.ImageFolder(root="chest_xray/train", transform=transform)
     validation_dataset = datasets.ImageFolder(
         root="chest_xray/val", transform=transform
     )
-    test_dataset = datasets.ImageFolder(
-        root="chest_xray/test", transform=transform
-    )
+    test_dataset = datasets.ImageFolder(root="chest_xray/test", transform=transform)
 
-    full_dataset = ConcatDataset(
-        [train_dataset, validation_dataset, test_dataset]
-    )
+    full_dataset = ConcatDataset([train_dataset, validation_dataset, test_dataset])
 
     all_indexes = np.arange(len(full_dataset))
     all_y = []
@@ -184,8 +179,8 @@ def main():
     device = get_device()
 
     train_dataset, validation_dataset, test_dataset = get_datasets()
-    train_dataloader, validation_dataloader, test_dataloader = (
-        get_data_loaders(train_dataset, validation_dataset, test_dataset)
+    train_dataloader, validation_dataloader, test_dataloader = get_data_loaders(
+        train_dataset, validation_dataset, test_dataset
     )
 
     # assertions because wrong type errors
@@ -207,9 +202,7 @@ def main():
     model = CNN().to(device)
 
     criterion = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=1e-3, weight_decay=1e-2
-    )
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-2)
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=AMOUNT_TRAINING_EPOCHS
     )
@@ -257,7 +250,13 @@ def main():
             all_test_y.extend(y.cpu().tolist())
             all_test_predictions.extend(predictions.cpu().tolist())
 
+    test_accuracy = np.mean(np.array(all_test_predictions) == np.array(all_test_y))
     display_evaluation_metrics(model.name, all_test_y, all_test_predictions)
+    
+    model_file_path = "models/cnn.pkl"
+    model.to("cpu")
+    joblib.dump(model, model_file_path)
+    print(f"{model.name} model: SAVED (accuracy={test_accuracy})")
 
 
 if __name__ == "__main__":

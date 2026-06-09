@@ -20,13 +20,12 @@ def display_frequency_labels(labels: pd.Series) -> None:
 
 
 def get_dataset_split():
-    dev_df = pd.read_csv("data/dev_data.csv")
-    image_df = pd.read_csv("data/image_data.csv")
-    test_df = pd.read_csv("data/test_data.csv")
+    
 
-    combined_df = pd.concat([image_df, dev_df, test_df], ignore_index=True)
-    X = combined_df.drop(columns=["label"])
-    y = combined_df["label"]
+
+    image_df = pd.read_csv("data/image_data_relabeled.csv")
+    X = image_df.drop(columns=["label"])
+    y = image_df["label"]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.33, random_state=RANDOM_STATE, stratify=y

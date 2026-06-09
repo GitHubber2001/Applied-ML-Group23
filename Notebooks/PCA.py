@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
-train_dir = "./chest_xray/chest_xray/train/"
+train_dir = "./chest_xray/train/"
 
 size = (256, 256)
 
@@ -61,17 +61,17 @@ test_df = pd.DataFrame(compressed_test)
 
 n_penu = penu_df.shape[0]
 n_normal = normal_df.shape[0]
-labels = np.array([0] * n_penu + [1] * n_normal)
+labels = np.array([1] * n_penu + [0] * n_normal)
 image_df["label"] = labels
 
 n_penu = penu_df_dev.shape[0]
 n_normal = normal_df_dev.shape[0]
-labels = np.array([0] * n_penu + [1] * n_normal)
+labels = np.array([1] * n_penu + [0] * n_normal)
 dev_df["label"] = labels
 
 n_penu = penu_df_test.shape[0]
 n_normal = normal_df_test.shape[0]
-labels = np.array([0] * n_penu + [1] * n_normal)
+labels = np.array([1] * n_penu + [0] * n_normal)
 test_df["label"] = labels
 
 image_df.to_csv("image_data.csv", index=False)

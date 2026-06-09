@@ -16,9 +16,7 @@ class Timer:
         """Initiliaze Timer"""
 
         if not isinstance(name, str):
-            raise TypeError(
-                f"Name argument must be a string ({name} was given)"
-            )
+            raise TypeError(f"Name argument must be a string ({name} was given)")
 
         self._name = name
         self._start_time = None
@@ -56,9 +54,7 @@ class Timer:
         """Decorator factory used for timing the duration of a function"""
 
         if not isinstance(name, str):
-            raise TypeError(
-                f"Name argument must be a string ({name} was given)"
-            )
+            raise TypeError(f"Name argument must be a string ({name} was given)")
 
         def decorator(func: Callable):
             if not isinstance(func, Callable):
@@ -88,9 +84,7 @@ class TimeManager:
 
     def __init__(self, name: str, get_summary: bool | None = False) -> None:
         if not isinstance(name, str):
-            raise TypeError(
-                f"Name argument must be a string ({name} was given)"
-            )
+            raise TypeError(f"Name argument must be a string ({name} was given)")
 
         if get_summary is None:
             get_summary = True
@@ -121,9 +115,7 @@ class TimeManager:
                 f"Time elapsed during '{self.name}' {exc_message}: {elapsed_time:.2f}"
             )
         else:
-            Logger.log(
-                f"Time elapsed during '{self.name}': {elapsed_time:.2f}"
-            )
+            Logger.log(f"Time elapsed during '{self.name}': {elapsed_time:.2f}")
 
         if self.get_summary:
             Logger.log("\nSummary duration processes:")

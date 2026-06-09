@@ -59,9 +59,8 @@ def get_dataloader(
 
 
 def get_device() -> str:
-    current_accelerator = torch.accelerator.current_accelerator(True)
-    if current_accelerator is not None:
-        device = current_accelerator.type
+    if torch.cuda.is_available():
+        device = "cuda"
     else:
         device = "cpu"
 
@@ -69,13 +68,11 @@ def get_device() -> str:
 
 
 def get_dataset_split():
-    dev_df = pd.read_csv("data/dev_data.csv")
-    image_df = pd.read_csv("data/image_data.csv")
-    test_df = pd.read_csv("data/test_data.csv")
+    
+    image_df = pd.read_csv("data/image_data_relabeled.csv")
 
-    combined_df = pd.concat([image_df, dev_df, test_df], ignore_index=True)
-    X = combined_df.drop(columns=["label"])
-    y = combined_df["label"]
+    X = image_df.drop(columns=["label"])
+    y = image_df["label"]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=RANDOM_STATE, stratify=y
@@ -139,18 +136,14 @@ def objective(
 ) -> float:
     learning_rate = trial.suggest_float("learning_rate", 1e-4, 5e-4, log=True)
     batch_size = trial.suggest_categorical("batch_size", [64, 128, 256])
-    amount_training_epochs = trial.suggest_int(
-        "amount_training_epochs", 20, 50
-    )
+    amount_training_epochs = trial.suggest_int("amount_training_epochs", 20, 50)
     fc1_size = trial.suggest_categorical("fc1_size", [64, 128, 256])
     fc2_size = trial.suggest_categorical("fc2_size", [16, 32, 64, 128])
 
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
     fold_accuracies = []
 
-    for fold, (train_index, val_index) in enumerate(
-        skf.split(X_train, y_train)
-    ):
+    for fold, (train_index, val_index) in enumerate(skf.split(X_train, y_train)):
         X_train_fold, X_val_fold = (
             X_train.iloc[train_index],
             X_train.iloc[val_index],
@@ -165,14 +158,10 @@ def objective(
         train_data_loader = get_dataloader(
             X_train_fold, y_train_fold, batch_size, device
         )
-        val_data_loader = get_dataloader(
-            X_val_fold, y_val_fold, batch_size, device
-        )
+        val_data_loader = get_dataloader(X_val_fold, y_val_fold, batch_size, device)
 
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.AdamW(
-            model.parameters(), lr=learning_rate, fused=True
-        )
+        optimizer = optim.AdamW(model.parameters(), lr=learning_rate, fused=True)
 
         train_model(
             model,
@@ -235,9 +224,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, fused=True)
 
-    train_model(
-        model, criterion, optimizer, amount_training_epochs, train_data_loader
-    )
+    train_model(model, criterion, optimizer, amount_training_epochs, train_data_loader)
 
     all_test_predictions = []
     model.eval()
@@ -254,7 +241,7 @@ def main():
     display_evaluation_metrics(model.name, y_test, all_test_predictions)
 
     model.to("cpu")
-    joblib.dump(model, model_file_path)
+    torch.save(model.state_dict(), "neural_network.pt")
     print(f"{model.name} model: SAVED (accuracy={test_accuracy})")
 
 
