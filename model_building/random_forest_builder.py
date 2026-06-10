@@ -28,7 +28,7 @@ def get_dataset_split():
     y = image_df["label"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.33, random_state=RANDOM_STATE, stratify=y
+        X, y, test_size=0.2, random_state=RANDOM_STATE, stratify=y
     )
 
     return X_train, X_test, y_train, y_test
@@ -87,10 +87,7 @@ else:
     previous_test_accuracy = -1
 
 if test_accuracy > previous_test_accuracy:
-    # save best model
     joblib.dump(best_random_forest, model_file_path)
-
-    # save best hyper parameters and accuracy
     with open(model_info_file_path, "w", encoding="utf-8") as file:
         json.dump(best_model_info, file)
 

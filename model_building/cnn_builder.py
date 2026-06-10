@@ -183,7 +183,7 @@ def main():
         train_dataset, validation_dataset, test_dataset
     )
 
-    # assertions because wrong type errors
+
     assert isinstance(train_dataset.dataset, ConcatDataset)
 
     all_targets = []
