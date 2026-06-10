@@ -1,5 +1,6 @@
 import pandas as pd
-
+'''we had to use this to swap the labels 
+due to the PCA file refusing to work due to ram constraints'''
 src = "image_data.csv"
 dst = "image_data_relabeled.csv"
 

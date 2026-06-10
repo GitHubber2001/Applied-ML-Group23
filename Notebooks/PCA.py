@@ -10,6 +10,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
+
+'''This is the messy part of the code
+    we do most of the data preporcessing
+    happens note that it is very ram intensive
+    so keep that in mind when running it needs about
+    12 gb of free ram in order to run '''
+
 train_dir = "./chest_xray/train/"
 
 size = (256, 256)
