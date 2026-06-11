@@ -79,13 +79,13 @@ Mahmood Saad:
 Worked on the data pre-processing for the random forest. made a baseline model for the random forest and made the API main functional structure.
 
 Federico Berdugo Morales:
-Contributed to the random forest model used for classifications made by the API and contributed to the discussions for the API. 
+Contributed to the random forest model used for classifications made by the API and contributed to the discussions for the API, cleaned code. 
 
 Kevin Kuipers:
 Mainly contributed to the creation and hyperparameter optimization of the random forest model used in the API to classify images as PNEUMONIA or NORMAL. Also made some structural changes in the repository, tested the API and contributed in discussion and planning for the API.
 
 Sian Bos Garcia:
-Focused mainly on the documentation making sure all elements were working and explained how they work.
+Focused mainly on the documentation making sure all elements were working and explained how they work, worked on readme, presentation.
 ## Linux and macOS
 ```console
 text
